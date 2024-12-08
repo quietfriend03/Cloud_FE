@@ -12,13 +12,15 @@ import {
 } from '../assets/strings';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { login } from '../utils/service';
+import { toast } from 'sonner';
+import OtpVerify from './otp-verify';
+import { jwtDecode } from 'jwt-decode';
 
 const formSchema = z.object({
     email: z.string({ required_error: "" }).email("Invalid email address"),
@@ -29,9 +31,10 @@ const formSchema = z.object({
     remember: z.boolean().default(false).optional(),
 });
 
-function Loginform() {
+function Loginform({ onOtpVerificationComplete }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
     const navigate = useNavigate();
 
     const form = useForm({
@@ -44,16 +47,58 @@ function Loginform() {
 
     const onSubmit = async (data) => {
         try {
-            console.log(data);
             const response = await login(data.email, data.password);
             console.log(response);
+
+            // Extract tokens from response
+            const RefreshToken = response.RefreshToken;
+            const IdToken = response.IdToken;
+            // Decode ID token to get user data
+            const decodedIdToken = jwtDecode(IdToken);
+            // Store tokens and user data in local storage
+            localStorage.setItem('refreshToken', RefreshToken);
+            localStorage.setItem('aws_sub', decodedIdToken.sub);
+            localStorage.setItem('aws_email', decodedIdToken.email);
+            localStorage.setItem('expired_time', decodedIdToken.exp);
+            toast.success('Login successful');
+            navigate('/user'); // Redirect to home page after successful login
         } catch (error) {
             console.error('Login failed:', error);
+            if (error.message === 'User is not confirmed.') {
+                setEmail(data.email); // Set email for OTP verification
+                setPassword(data.password); // Set password for auto login
+                setIsOtpDialogOpen(true); // Open OTP verification dialog
+            } else {
+                toast.error(error.message || 'Login failed');
+            }
         }
     };
 
     const onError = error => {
         console.log(error);
+    };
+
+    const handleOtpVerificationComplete = async () => {
+        try {
+            const response = await login(email, password);
+            console.log(response);
+
+            // Extract tokens from response
+            const RefreshToken = response.RefreshToken;
+            const IdToken = response.IdToken;
+            // Decode ID token to get user data
+            const decodedIdToken = jwtDecode(IdToken);
+            // Store tokens and user data in local storage
+            localStorage.setItem('refreshToken', RefreshToken);
+            localStorage.setItem('aws_sub', decodedIdToken.sub);
+            localStorage.setItem('aws_email', decodedIdToken.email);
+
+            toast.success('Login successful');
+            navigate('/'); // Redirect to home page after successful login
+        } catch (error) {
+            console.error('Auto login failed:', error);
+            toast.error(error.message || 'Auto login failed');
+        }
     };
 
     return (
@@ -116,6 +161,7 @@ function Loginform() {
                     </Button>
                 </form>
             </Form>
+            {isOtpDialogOpen && <OtpVerify isOpen={isOtpDialogOpen} onClose={() => setIsOtpDialogOpen(false)} email={email} onOtpVerificationComplete={handleOtpVerificationComplete} />}
         </div>
     );
 }

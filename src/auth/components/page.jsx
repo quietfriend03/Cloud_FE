@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import AuthBackground from '../assets/bgimg.png';
@@ -18,7 +17,11 @@ export const Page = () => {
     };
 
     const handleToggleLoginState = () => {
-        setIsUserLogin(true);
+        setIsUserLogin(!isUserLogin);
+    };
+
+    const handleOtpVerificationComplete = () => {
+        setIsUserLogin(true); // Change state to login after OTP verification
     };
 
     return (
@@ -32,7 +35,7 @@ export const Page = () => {
                 <Button
                     href="/login"
                     className="absolute right-4 top-4 md:right-8 md:top-8"
-                    onClick={() => setIsUserLogin(!isUserLogin)}
+                    onClick={handleToggleLoginState}
                 >
                     {isUserLogin ? 'Create account' : 'Sign In'}
                 </Button>
@@ -65,11 +68,9 @@ export const Page = () => {
                 <div className="lg:p-8 flex justify-center items-center w-full">
                     <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
                         {isUserLogin ? (
-                            <Loginform />
+                            <Loginform onOtpVerificationComplete={handleOtpVerificationComplete} />
                         ) : (
-                            <Signupform
-                                onSignUpComplete={handleToggleLoginState}
-                            />
+                            <Signupform onSignUpComplete={handleOtpVerificationComplete} />
                         )}
                         <div className="relative">
                         </div>

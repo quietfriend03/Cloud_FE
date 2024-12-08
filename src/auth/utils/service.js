@@ -9,7 +9,9 @@ export const signup = async (email, password) => {
         console.log(response)
         return response.data;
     } catch (error) {
-        throw error.response.data;
+        const errorMessage =
+            error.error?.message || "An unexpected error occurred";
+        throw new Error(errorMessage);
     }
 };
 
@@ -23,6 +25,7 @@ export const login = async (email, password) => {
         return response.AuthenticationResult;
     } catch (error) {
         console.error(error);
+        throw new Error(error.error?.message || "Login failed");
     }
 };
 
@@ -36,6 +39,7 @@ export const verify = async (email, code) => {
         return response
     } catch (error) {
         console.error(error);
+        throw new Error(error.error?.message || "OTP verification failed");
     }
 }
 
@@ -48,6 +52,7 @@ export const resend = async (email) => {
         return response
     } catch (error) {
         console.error(error);
+        throw new Error(error.error?.message || "Resend OTP failed");
     }
 }
 
@@ -57,9 +62,9 @@ export const refresh = async (sub, refreshToken) => {
             sub,
             refreshToken,
         });
-
         return response
     } catch (error) {
         console.error(error);
+        throw new Error(error.error?.message || "Token refresh failed");
     }
 }

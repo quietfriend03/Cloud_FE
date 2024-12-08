@@ -46,18 +46,24 @@ function Signupform({ onSignUpComplete }) {
 
     const onSubmit = async (data) => {
         try {
-            console.log(data)
-            const response =  await signup(data.email, data.password);
+            const response = await signup(data.email, data.password);
             console.log(response);
             toast.success('Account has been created');
+            setEmail(data.email); // Set email for OTP verification
             setIsOtpDialogOpen(true); // Open OTP verification dialog
         } catch (error) {
             console.error('Sign up failed:', error);
+            toast.error(error.message || 'Sign up failed');
         }
     };
 
     const onError = error => {
         console.log(error);
+    };
+
+    const handleOtpVerificationComplete = () => {
+        setIsOtpDialogOpen(false);
+        onSignUpComplete(); // Trigger the callback to show the login form
     };
 
     return (
@@ -138,7 +144,7 @@ function Signupform({ onSignUpComplete }) {
                     </Button>
                 </form>
             </Form>
-            {isOtpDialogOpen && <OtpVerify isOpen={isOtpDialogOpen} onClose={() => setIsOtpDialogOpen(false)} />}
+            {isOtpDialogOpen && <OtpVerify isOpen={isOtpDialogOpen} onClose={() => setIsOtpDialogOpen(false)} email={email} onOtpVerificationComplete={handleOtpVerificationComplete} />}
         </div>
     );
 }
