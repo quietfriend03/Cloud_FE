@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -13,6 +13,13 @@ export function AddEventDialog({ show, onClose, selectedDate, setEvents }) {
     const [title, setTitle] = useState('');
     const [startDate, setStartDate] = useState(selectedDate);
     const [endDate, setEndDate] = useState(selectedDate);
+
+    useEffect(() => {
+        if (show) {
+            setStartDate(selectedDate);
+            setEndDate(selectedDate);
+        }
+    }, [show, selectedDate]);
 
     const handleAddEvent = () => {
         setEvents(prevEvents => [
