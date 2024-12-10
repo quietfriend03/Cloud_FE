@@ -27,26 +27,32 @@ export function EventSheet({ events }) {
             Here you can view and manage all events
           </SheetDescription>
         </SheetHeader>
-        <div>
-          <h2 className="font-bold text-lg">Late Events</h2>
+        <div className="mt-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+          <h2 className="font-bold text-lg mb-2">Late Events</h2>
           {lateEvents.length > 0 ? (
             lateEvents.map((event, index) => (
-              <div key={index} className="mb-2">
-                <p>{event.title}</p>
-                <p>{new Date(event.start).toLocaleString()}</p>
+              <div key={index} className="mb-4 p-3 border rounded-lg shadow-sm flex justify-between items-center cursor-pointer">
+                <div>
+                  <p className="font-semibold">{event.title}</p>
+                  <p className="text-sm text-gray-500">{new Date(event.start).toLocaleString()}</p>
+                  <p className="text-sm text-gray-500">{event.description}</p>
+                </div>
               </div>
             ))
           ) : (
             <p>No late events</p>
           )}
         </div>
-        <div>
-          <h2 className="font-bold text-lg">Upcoming Events</h2>
+        <div className="mt-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+          <h2 className="font-bold text-lg mb-2">Upcoming Events</h2>
           {upcomingEvents.length > 0 ? (
             upcomingEvents.map((event, index) => (
-              <div key={index} className="mb-2">
-                <p>{event.title}</p>
-                <p>{new Date(event.start).toLocaleString()}</p>
+              <div key={index} className="mb-4 p-3 border rounded-lg shadow-sm flex justify-between items-center cursor-pointer">
+                <div>
+                  <p className="font-semibold">{event.title}</p>
+                  <p className="text-sm text-gray-500">{new Date(event.start).toLocaleString()}</p>
+                  <p className="text-sm text-gray-500">{event.description}</p>
+                </div>
               </div>
             ))
           ) : (

@@ -29,7 +29,7 @@ export const RequireAuth = () => {
             if (!refreshToken || isExpired()) {
                 try {
                     const response = await refresh(sub, refreshToken);
-                    const IdToken = response.AuthenticationResult.IdToken;
+                    const IdToken = response.idToken;
                     const expiration_time = jwtDecode(IdToken).exp;
                     localStorage.setItem('expired_time', expiration_time);
                     setAuthenticated(true);

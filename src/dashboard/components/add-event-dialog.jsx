@@ -9,23 +9,48 @@ import {
 import { Input } from '@/components/ui/input';
 import { DatePicker } from './day-picker';
 
-export function AddEventDialog({ show, onClose, selectedDate, setEvents }) {
+export function AddEventDialog({ show, onClose, selectedDate, selectedEvent, setEvents }) {
     const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
     const [startDate, setStartDate] = useState(selectedDate);
     const [endDate, setEndDate] = useState(selectedDate);
 
     useEffect(() => {
         if (show) {
-            setStartDate(selectedDate);
-            setEndDate(selectedDate);
+            if (selectedEvent) {
+                setTitle(selectedEvent.title);
+                setDescription(selectedEvent.description);
+                setStartDate(new Date(selectedEvent.start));
+                setEndDate(new Date(selectedEvent.end));
+            } else {
+                setTitle('');
+                setDescription('');
+                setStartDate(selectedDate);
+                setEndDate(selectedDate);
+            }
         }
-    }, [show, selectedDate]);
+    }, [show, selectedDate, selectedEvent]);
 
-    const handleAddEvent = () => {
-        setEvents(prevEvents => [
-            ...prevEvents,
-            { title, start: startDate, end: endDate }
-        ]);
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const eventData = { title, description, start: startDate, end: endDate };
+        console.log(eventData);
+
+        if (selectedEvent) {
+            setEvents(prevEvents =>
+                prevEvents.map(event =>
+                    event === selectedEvent ? eventData : event
+                )
+            );
+        } else {
+            setEvents(prevEvents => [...prevEvents, eventData]);
+        }
+
+        onClose();
+    };
+
+    const handleDelete = () => {
+        setEvents(prevEvents => prevEvents.filter(event => event !== selectedEvent));
         onClose();
     };
 
@@ -35,12 +60,12 @@ export function AddEventDialog({ show, onClose, selectedDate, setEvents }) {
         <Dialog open={show} onOpenChange={onClose}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Add New Event</DialogTitle>
+                    <DialogTitle>{selectedEvent ? 'Edit Event' : 'Add New Event'}</DialogTitle>
                     <DialogDescription>
-                        Add a new event for the selected date.
+                        {selectedEvent ? 'Edit the event details.' : 'Add a new event for the selected date.'}
                     </DialogDescription>
                 </DialogHeader>
-                <div className="mt-4">
+                <form onSubmit={handleSubmit} className="mt-4">
                     <Input
                         type="text"
                         value={title}
@@ -48,6 +73,16 @@ export function AddEventDialog({ show, onClose, selectedDate, setEvents }) {
                         placeholder="Event Title"
                         className="border p-2 mb-4 w-full"
                     />
+                    <div className="mb-4">
+                        <label className="block mb-2">Description</label>
+                        <Input
+                            type="text"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="Event Description"
+                            className="border p-2 mb-4 w-full"
+                        />
+                    </div>
                     <div className="mb-4">
                         <label className="block mb-2">Start Date</label>
                         <DatePicker date={startDate} setDate={setStartDate} />
@@ -57,10 +92,13 @@ export function AddEventDialog({ show, onClose, selectedDate, setEvents }) {
                         <DatePicker date={endDate} setDate={setEndDate} />
                     </div>
                     <div className="flex justify-end">
-                        <button onClick={onClose} className="mr-2 px-4 py-2 bg-gray-300 rounded">Cancel</button>
-                        <button onClick={handleAddEvent} className="px-4 py-2 bg-blue-500 text-white rounded">Add Event</button>
+                        <button type="button" onClick={onClose} className="mr-2 px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                        {selectedEvent && (
+                            <button type="button" onClick={handleDelete} className="mr-2 px-4 py-2 bg-red-500 text-white rounded">Delete</button>
+                        )}
+                        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">{selectedEvent ? 'Save' : 'Add Event'}</button>
                     </div>
-                </div>
+                </form>
             </DialogContent>
         </Dialog>
     );
