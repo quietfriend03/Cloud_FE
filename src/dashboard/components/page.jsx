@@ -1,26 +1,45 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { ProfileBar } from './profile-bar';
 import { AddEventDialog } from './add-event-dialog';
 import { EventSheet } from './event-sheet';
+import { fetchEvents, createEvent, editEvent, deleteEvent } from '../utils/service';
 
 const localizer = momentLocalizer(moment);
 
 export const Page = () => {
-    const [events, setEvents] = useState([
-        { title: "Sample Event 1", start: new Date(), end: new Date(), description: "Description for Sample Event 1" },
-        { title: "Sample Event 2", start: new Date(new Date().setDate(new Date().getDate() - 1)), end: new Date(new Date().setDate(new Date().getDate() - 1)), description: "Description for Sample Event 2" },
-        { title: "Sample Event 3", start: new Date(new Date().setDate(new Date().getDate() + 1)), end: new Date(new Date().setDate(new Date().getDate() + 1)), description: "Description for Sample Event 3" },
-        { title: "Sample Event 4", start: new Date(new Date().setDate(new Date().getDate() - 2)), end: new Date(new Date().setDate(new Date().getDate() - 2)), description: "Description for Sample Event 4" },
-        { title: "Sample Event 5", start: new Date(new Date().setDate(new Date().getDate() + 2)), end: new Date(new Date().setDate(new Date().getDate() + 2)), description: "Description for Sample Event 5" },
-    ]);
-
+    const [events, setEvents] = useState([]);
     const [showDialog, setShowDialog] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const calendarRef = useRef(null);
+
+    const loadEvents = async () => {
+        try {
+            const sub = localStorage.getItem('aws_sub'); // Replace with dynamic user sub if needed
+            const fetchedEvents = await fetchEvents(sub);
+            if (Array.isArray(fetchedEvents)) {
+                const mappedEvents = fetchedEvents.map(event => ({
+                    title: event.name,
+                    start: new Date(event.startDate),
+                    end: new Date(event.endDate),
+                    description: event.description,
+                    id: event.id,
+                }));
+                setEvents(mappedEvents);
+            } else {
+                console.error('Fetched events are not an array:', fetchedEvents);
+            }
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        }
+    };
+
+    useEffect(() => {
+        loadEvents();
+    }, []);
 
     const handleSelectSlot = ({ start }) => {
         setSelectedDate(start);
@@ -77,6 +96,7 @@ export const Page = () => {
                 selectedDate={selectedDate}
                 selectedEvent={selectedEvent}
                 setEvents={setEvents}
+                loadEvents={loadEvents} // Pass loadEvents to refetch events
             />
         </div>
     );

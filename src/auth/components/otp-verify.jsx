@@ -44,7 +44,6 @@ function OtpVerify({ isOpen, onClose, email, onOtpVerificationComplete }) {
     const handleResend = async () => {
         try {
             const response = await resend(email);
-            console.log(response);
             toast.success('OTP resent successfully');
         } catch (error) {
             console.error('Resend OTP failed:', error);

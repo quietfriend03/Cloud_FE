@@ -18,7 +18,7 @@ export function EventSheet({ events }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Open</Button>
+        <Button variant="outline">All events</Button>
       </SheetTrigger>
       <SheetContent side='left'>
         <SheetHeader>
@@ -27,7 +27,7 @@ export function EventSheet({ events }) {
             Here you can view and manage all events
           </SheetDescription>
         </SheetHeader>
-        <div className="mt-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+        <div className="mt-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 370px)' }}>
           <h2 className="font-bold text-lg mb-2">Late Events</h2>
           {lateEvents.length > 0 ? (
             lateEvents.map((event, index) => (

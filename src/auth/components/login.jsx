@@ -48,8 +48,6 @@ function Loginform({ onOtpVerificationComplete }) {
     const onSubmit = async (data) => {
         try {
             const response = await login(data.email, data.password);
-            console.log(response);
-
             // Extract tokens from response
             const RefreshToken = response.RefreshToken;
             const IdToken = response.IdToken;
@@ -61,7 +59,7 @@ function Loginform({ onOtpVerificationComplete }) {
             localStorage.setItem('aws_email', decodedIdToken.email);
             localStorage.setItem('expired_time', decodedIdToken.exp);
             toast.success('Login successful');
-            navigate('/user'); // Redirect to home page after successful login
+            navigate('/'); // Redirect to home page after successful login
         } catch (error) {
             console.error('Login failed:', error);
             if (error.message === 'User is not confirmed.') {
