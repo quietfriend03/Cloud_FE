@@ -59,7 +59,7 @@ function Loginform({ onOtpVerificationComplete }) {
             localStorage.setItem('aws_email', decodedIdToken.email);
             localStorage.setItem('expired_time', decodedIdToken.exp);
             toast.success('Login successful');
-            navigate('/'); // Redirect to home page after successful login
+            navigate('/user'); // Redirect to home page after successful login
         } catch (error) {
             console.error('Login failed:', error);
             if (error.message === 'User is not confirmed.') {

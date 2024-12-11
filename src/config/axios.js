@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BE_ROUTE = 'http://localhost:8080/';
+const BE_ROUTE = 'http://cloudendterm-env.eba-tsuii5pq.ap-southeast-1.elasticbeanstalk.com/';
 
 export const axiosGet = async (endpoint = '') => {
     const apiRoute = BE_ROUTE + endpoint;
