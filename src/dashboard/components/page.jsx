@@ -70,7 +70,7 @@ export const Page = () => {
 
     return (
         <div style={{ height: "100vh", display: "flex", flexDirection: "row" }}>
-            <div style={{ height: '100vh', width: '300px'}}>
+            <div style={{ height: '100vh', width: '250px'}}>
                 <ProfileBar events={events} />
                 <EventSheet events={events} onEventClick={handleEventClick} />
             </div>
