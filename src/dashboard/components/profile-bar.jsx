@@ -46,8 +46,7 @@ export function ProfileBar({ events }) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete your account
-                            and remove your data from our servers.
+                            This action cannot be undone. And you will be logged out.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
